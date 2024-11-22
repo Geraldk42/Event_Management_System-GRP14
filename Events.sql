@@ -1,49 +1,4 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1deb3
--- https://www.phpmyadmin.net/
---
--- Host: localhost:3306
--- Generation Time: Nov 21, 2024 at 11:47 AM
--- Server version: 10.11.9-MariaDB-ubu2404
--- PHP Version: 8.3.6
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Database: `Event`
---
-
-DELIMITER $$
---
--- Procedures
---
-CREATE DEFINER=`root`@`localhost` PROCEDURE `AddNewAdmin` (IN `p_Staffid` VARCHAR(255), IN `p_AdminName` VARCHAR(120), IN `p_UserName` VARCHAR(120), IN `p_FirstName` VARCHAR(255), IN `p_LastName` VARCHAR(255), IN `p_MobileNumber` BIGINT, IN `p_Email` VARCHAR(200), IN `p_Password` VARCHAR(120))   BEGIN INSERT INTO tbladmin ( Staffid, AdminName, UserName, FirstName, LastName, MobileNumber, Email, Password ) VALUES ( p_Staffid, p_AdminName, p_UserName, p_FirstName, p_LastName, p_MobileNumber, p_Email, p_Password )$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `GetBookingsByDate` (IN `eventDate` VARCHAR(200))   BEGIN
-    SELECT 
-        b.BookingID,
-        b.Name,
-        b.EventDate,
-        b.EventStartingtime,
-        b.EventEndingtime,
-        s.ServiceName,
-        s.ServicePrice
-    FROM tblbooking b
-    LEFT JOIN tblservice s ON b.ServiceID = s.ID
-    WHERE b.EventDate = eventDate$$
-
-DELIMITER ;
-
--- --------------------------------------------------------
-
+create database Event;
 --
 -- Table structure for table `booking_status_logs`
 --
@@ -223,28 +178,6 @@ INSERT INTO `tblbooking` (`ID`, `BookingID`, `ServiceID`, `Name`, `MobileNumber`
 (19, 123456807, 19, 'Daniel King', 9876543228, 'daniel.k@email.com', '2024-04-15', '17:00', '22:00', '792 Sangeet Hall, San Francisco', 'Sangeet', 'Pre-wedding celebration', '2024-01-02 11:00:00', 'Confirmed', 'Cancelled', '2024-11-21 11:42:40'),
 (20, 123456808, 20, 'Rachel Green', 9876543229, 'rachel.g@email.com', '2024-04-20', '18:00', '23:00', '803 Reception Ave, Los Angeles', 'Post Wedding', 'Reception party', '2024-01-03 12:00:00', 'Decoration finalized', 'Cancelled', '2024-11-21 11:42:40');
 
---
--- Triggers `tblbooking`
---
-DELIMITER $$
-CREATE TRIGGER `booking_status_change` AFTER UPDATE ON `tblbooking` FOR EACH ROW BEGIN
-    IF OLD.Status != NEW.Status THEN
-        INSERT INTO booking_status_logs (booking_id, old_status, new_status)
-        VALUES (NEW.BookingID, OLD.Status, NEW.Status)$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `validate_event_times` BEFORE INSERT ON `tblbooking` FOR EACH ROW BEGIN
-    IF NEW.EventStartingtime >= NEW.EventEndingtime THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Event ending time must be after starting time'$$
-DELIMITER ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `tblcompany`
---
-
 CREATE TABLE `tblcompany` (
   `id` int(11) NOT NULL,
   `regno` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
@@ -258,9 +191,6 @@ CREATE TABLE `tblcompany` (
   `creationdate` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `tblcompany`
---
 
 INSERT INTO `tblcompany` (`id`, `regno`, `companyname`, `companyemail`, `country`, `companyphone`, `companyaddress`, `companylogo`, `status`, `creationdate`) VALUES
 (1, 'REG001', 'Elite Events', 'contact@eliteevents.com', 'USA', '+1234567890', '123 Main St, New York', 'logo1.jpg', '1', '2022-12-31 21:00:00'),
@@ -284,21 +214,12 @@ INSERT INTO `tblcompany` (`id`, `regno`, `companyname`, `companyemail`, `country
 (19, 'REG019', 'Imperial Events', 'contact@imperialevents.com', 'Vietnam', '+9900112233', '792 Hanoi Rd, Hanoi', 'logo19.jpg', '1', '2023-01-18 21:00:00'),
 (20, 'REG020', 'Majestic Celebrations', 'info@majesticcelebrations.com', 'Indonesia', '+0011223344', '803 Jakarta St, Jakarta', 'logo20.jpg', '1', '2023-01-19 21:00:00');
 
--- --------------------------------------------------------
-
---
--- Table structure for table `tbleventtype`
---
-
 CREATE TABLE `tbleventtype` (
   `ID` int(10) NOT NULL,
   `EventType` varchar(200) DEFAULT NULL,
   `CreationDate` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `tbleventtype`
---
 
 INSERT INTO `tbleventtype` (`ID`, `EventType`, `CreationDate`) VALUES
 (19, 'Corporate Conference', '2023-01-19 07:00:00'),
@@ -309,12 +230,6 @@ INSERT INTO `tbleventtype` (`ID`, `EventType`, `CreationDate`) VALUES
 (24, 'Trade Show', '2023-01-24 07:00:00'),
 (25, 'Seminar', '2023-01-25 07:00:00');
 
--- --------------------------------------------------------
-
---
--- Table structure for table `tblservice`
---
-
 CREATE TABLE `tblservice` (
   `ID` int(10) NOT NULL,
   `ServiceName` varchar(200) DEFAULT NULL,
@@ -322,10 +237,6 @@ CREATE TABLE `tblservice` (
   `ServicePrice` varchar(200) DEFAULT NULL,
   `CreationDate` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tblservice`
---
 
 INSERT INTO `tblservice` (`ID`, `ServiceName`, `SerDes`, `ServicePrice`, `CreationDate`) VALUES
 (1, 'Party decorations', 'we finish designing 4 hours before your ceremony.', '8000', '2022-01-24 04:17:43'),
@@ -354,12 +265,6 @@ INSERT INTO `tblservice` (`ID`, `ServiceName`, `SerDes`, `ServicePrice`, `Creati
 (19, 'Cleanup Service', 'Post-event cleanup service', '3000', '2023-01-19 07:00:00'),
 (20, 'Event Planning', 'Complete event planning service', '15000', '2023-01-20 07:00:00');
 
--- --------------------------------------------------------
-
---
--- Stand-in structure for view `vw_active_bookings`
--- (See below for the actual view)
---
 CREATE TABLE `vw_active_bookings` (
 `BookingID` int(10)
 ,`Name` varchar(200)
@@ -372,12 +277,6 @@ CREATE TABLE `vw_active_bookings` (
 ,`Status` varchar(200)
 );
 
--- --------------------------------------------------------
-
---
--- Stand-in structure for view `vw_admin_activity`
--- (See below for the actual view)
---
 CREATE TABLE `vw_admin_activity` (
 `Staffid` varchar(255)
 ,`full_name` varchar(511)
@@ -386,31 +285,11 @@ CREATE TABLE `vw_admin_activity` (
 ,`last_booking_handled` timestamp
 );
 
--- --------------------------------------------------------
-
---
--- Structure for view `vw_active_bookings`
---
 DROP TABLE IF EXISTS `vw_active_bookings`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_active_bookings`  AS SELECT `b`.`BookingID` AS `BookingID`, `b`.`Name` AS `Name`, `b`.`EventDate` AS `EventDate`, `b`.`EventStartingtime` AS `EventStartingtime`, `b`.`EventEndingtime` AS `EventEndingtime`, `b`.`EventType` AS `EventType`, `s`.`ServiceName` AS `ServiceName`, `s`.`ServicePrice` AS `ServicePrice`, `b`.`Status` AS `Status` FROM (`tblbooking` `b` left join `tblservice` `s` on(`b`.`ServiceID` = `s`.`ID`)) WHERE `b`.`Status` is null OR `b`.`Status` <> 'Cancelled' ;
-
--- --------------------------------------------------------
-
---
--- Structure for view `vw_admin_activity`
---
 DROP TABLE IF EXISTS `vw_admin_activity`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_admin_activity`  AS SELECT `a`.`Staffid` AS `Staffid`, concat(`a`.`FirstName`,' ',`a`.`LastName`) AS `full_name`, `a`.`Email` AS `Email`, count(`b`.`ID`) AS `total_bookings_handled`, max(`b`.`BookingDate`) AS `last_booking_handled` FROM (`tbladmin` `a` left join `tblbooking` `b` on(`a`.`Email` = `b`.`Email`)) GROUP BY `a`.`Staffid`, concat(`a`.`FirstName`,' ',`a`.`LastName`), `a`.`Email` ;
 
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `booking_status_logs`
---
 ALTER TABLE `booking_status_logs`
   ADD PRIMARY KEY (`id`);
 
@@ -435,8 +314,3 @@ ALTER TABLE `booking_status_logs`
 --
 ALTER TABLE `tbladmin`
   MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
