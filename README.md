@@ -141,5 +141,7 @@ CALL AddNewAdmin(
 );
 
 with those queries in mind its easy to navigate the system!!!
-THANK YOU FOR GETTING THIS FAR!!!
+THANK YOU FOR GETTING THIS FAR!!! 
+for a visual guide click the link below
+https://drive.google.com/file/d/1r3GGR-wcERFBG-DyKTmPkcXvggo65wK3/view
 
